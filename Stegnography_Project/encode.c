@@ -245,3 +245,144 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
         printf("INFO: Magic string encoded\n");
         return e_success;
     }
+
+    status encode_byte_to_lsb(char data,char*image_buffer)
+    {
+        for(int i=0;i<8;i++)
+        {
+            int mask=1<<(7-i);
+            //to check nth bit set of secret code
+            if(data&mask)
+            {// it is set
+            // set image buffer lsb
+                image_buffer[i]=image_buffer[i]1;
+            }
+            else{
+                image_buffer[i]=image_buffer[i]&(~1);
+            }
+        }
+        return e_success;
+    }
+
+    Status encode_secret_file_extn_size(uint size,EncodeInfo *encinfo){
+        char buff[32];
+        if(fread(buff,1,32,encinfo->fptr_src_image)!=32){
+                printf("Error: Incomplete source image\n");
+                return e_failure;
+            }
+            if(encode_size_to_lsb(size,buff)!=e_success){
+                return e_failure;
+            }
+            if(fwrite(buff,1,32,encinfo->fptr_stego_image)!=32){
+                printf("Error: Failed write to destination image\n");
+                return e_failure;
+            }
+            printf("INFO: Extn size encoded\n");
+            return e_success;
+        }
+
+    status encode_size_to_lsb(uint size,char *image_buffer)
+    {
+        for(int i=0;i<32;i++)
+        {
+            uint mask=1U<<(31-i);
+            if(size&mask)
+            {
+                image_buffer[i]=image_buffer[i]|1;
+            }
+            else
+            {
+                image_buffer[i]=image_buffer[i]&(~1);
+
+            }
+        }
+        return e_success;
+    }
+
+    Status encode_secret_file_extn(const char *file_extn,EncodeInfo *encinfo){
+        char buff[8];
+        int len=strlen(file_extn);
+    
+        for(int i=0;i<len;i++){
+            if(fread(buff,1,8,encinfo->fptr_src_image)!=8){
+                printf("Error: Failed to read source image\n");
+                return e_failure;
+            }
+            if(encode_byte_to_lsb(file_extn[i],buff)!=e_success){
+                printf("Error: Encoding file_extn failed\n");
+                return e_failure;
+            }
+            if(fwrite(buff,1,8,encinfo->fptr_stego_image)!=8){
+                printf("Error: Failed to write extension to the destination fille\n");
+                return e_failure;
+
+            }
+        }
+        printf("INFO: Secret file extn encoded\n");
+        return e_success;
+    }
+
+    status encode_secret_file_size(long file_size,EncodeInfo *encInfo)
+    {
+        char buff[32];
+        if(fread(buff,1,32,encInfo->fptr_src_image)!=32)
+        {
+            printf("Error: Failed to to read source image\n");
+            return e_failure;
+        }
+        if(encode_size_to_lsb(file_size,buff)!=e_success)
+        {
+            printf("Error: Encoding the secret file size failed\n");
+            return e_failure;
+        }
+        if(fwrite(buff,1,32,encInfo->fptr_stego_image)!=32){
+            printf("Error: Failed to write secret file size to destination image\n");
+            return e_failure;
+        }
+        printf("INFO: Secret file size encoded\n");
+        return e_success;
+    }
+
+    status encode_secret_file_data(EncodeInfo *encInfo)
+    {
+        char buff[8];
+        char data;
+        int size=encInfo->size_secret_file;
+        for(int i=0;i<size;i++)
+        {
+           if(fread(buff,1,8,encInfo->fptr_src_image)!=8)
+           {
+            printf("Error: failed to read source image\n");
+            return e_failure;
+           } 
+           if(fread(&data,1,1,encInfo->fptr_secret)!=1)
+           {
+             printf("Error: Failed to read secret file data\n");
+             return e_failure;
+           }
+           if(encode_byte_to_lsb(data,buff)!=e_success){
+                printf("Error: Failed to encode data to destination image\n");
+                return e_failure;
+            }
+            if(fwrite(buff,1,8,encInfo->fptr_stego_image)!=8){
+                printf("Error: Failed to write secret data to dest image\n");
+                return e_failure;
+            }
+
+        }
+        printf("INFO: Secret file data encoded\n");
+        return e_success;
+    }
+    status copy_remaining_img_data(FILE *fptr_src,FILE*fptr_dest)
+    {
+        int ch;
+        while((ch=fgetc(fptr_src))!=EOF)
+        {
+           if(fputc(ch,fptr_dest)==EOF)
+           {
+            return e_failure;
+           }
+        }
+        printf("INFO: Remaining image data copied\n");
+        return e_success;
+    }
