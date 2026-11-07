@@ -169,3 +169,79 @@ Status read_and_validate_encode_args(int argc,char *argv[], EncodeInfo *encInfo)
 
           return e_success;
         }
+
+
+         Status check_capacity(EncodeInfo *encInfo){
+        encInfo -> size_secret_file = get_file_size(encInfo->fptr_secret);
+        if(encInfo->size_secret_file ==0){
+            printf("Secret file is empty\n");
+            return e_failure;
+        }
+        encInfo->image_capacity=get_image_size_for_bmp(encInfo->fptr_src_image);
+        long required_capacity =((long)encInfo->size_secret_file + 14) * 8;
+  
+        if(encInfo->image_capacity>=required_capacity){
+            return e_success;
+        }
+        
+        return e_failure;
+    }
+
+
+
+   uint get_file_size(FILE *fptr)
+{
+    if (fseek(fptr, 0, SEEK_END) != 0){
+        return 0;
+    }
+    long res = ftell(fptr);
+    if (res == -1L)
+    {
+         return 0;
+    }
+    rewind(fptr);
+    return (uint)res;
+}
+
+    Status copy_bmp_header(FILE *fptr_src_image, FILE *fptr_dest_image){
+        char buff[54];
+
+        rewind(fptr_src_image);
+        rewind(fptr_dest_image);
+        if(fread(buff,1,54,fptr_src_image)!=54){
+            printf("Incomplete header file of source image");
+            return e_failure;
+        }
+
+         if(fwrite(buff,1,54,fptr_dest_image)!=54){
+            return e_failure;
+        }
+        return e_success;
+
+
+    } 
+      
+    Status encode_magic_string(const char *magic_string,EncodeInfo *encInfo){
+        char buff[8];
+        int len=strlen(MAGIC_STRING);
+        for(int i=0;i<len;i++){
+            if(fread(buff,1,8,encInfo->fptr_src_image)!=8){
+                return e_failure;
+            }
+            if(encode_byte_to_lsb(magic_string[i],buff)==e_success)
+            {
+                
+                if(fwrite(buff,1,8,encInfo->fptr_stego_image)!=8)
+                {
+                return e_failure;
+                }
+            }
+            else
+            {
+            return e_failure;
+            }
+
+        }
+        printf("INFO: Magic string encoded\n");
+        return e_success;
+    }
