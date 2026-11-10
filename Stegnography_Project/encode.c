@@ -1,21 +1,21 @@
-#include<stdio.h>              // This header file is used for standard input and output functions
-#include<string.h>             // This header file is used for string handling functions
-#include "encode.h"            // This file contains function declarations related to encoding
-#include "types.h"             // This file contains user defined data types and structures
-#define RED     "\033[1;91m"    // Bright Red
-#define GREEN   "\033[1;92m"    // Bright Green
-#define YELLOW  "\033[1;93m"    // Bright Yellow
+#include<stdio.h>              
+#include<string.h>             
+#include "encode.h"            
+#include "types.h"             
+#define RED     "\033[1;91m"    
+#define GREEN   "\033[1;92m"    
+#define YELLOW  "\033[1;93m"    
 #define BLUE "\033[1;94m"
-#define RESET   "\033[0m"       // Reset colour
+#define RESET   "\033[0m"       
 
-Status read_and_validate_encode_args(char *argv[], EncodeInfo *encInfo)
+Status read_and_validate_encode_args(char *argv[], EncodeInfo *encInfo) // This function reads and validates command line arguments
 {
-    
+    // Check required arguments
     if (argv[2] == NULL || argv[3] == NULL) // Check whether input image and secret file arguments are provided
     {
-        printf(RED "Error: Missing arguments\n" RESET); 
-        printf("Usage: ./a.out -e <image.bmp> <secret.txt> [output.bmp]\n"); 
-        return e_failure; 
+        printf(RED "Error: Missing arguments\n" RESET); // Print error message if arguments are missing
+        printf("Usage: ./a.out -e <image.bmp> <secret.txt> [output.bmp]\n"); // Display correct usage format
+        return e_failure; // Return failure if arguments are not valid
     }
 
     // Validate BMP
@@ -49,7 +49,9 @@ Status read_and_validate_encode_args(char *argv[], EncodeInfo *encInfo)
     return e_success; // Return success after successful validation
 }
 Status do_encoding(EncodeInfo *encInfo){   // This function performs the complete encoding process step by step
-   printf("ENCODING STARTED\n");
+   printf(YELLOW "\n============================================================\n" RESET);
+printf(YELLOW "                ENCODING PROCESS STARTED\n" RESET);
+printf(YELLOW "============================================================\n\n" RESET);
     if( open_files(encInfo) == e_success){   // Check if all required files are opened successfully
         printf(GREEN "All files opened successfully\n" RESET);
     }
