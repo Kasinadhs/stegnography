@@ -52,9 +52,9 @@ void remove_extn(char *fname)
 
 Status do_decoding(DecodeInfo *decInfo)   // This function performs the complete decoding process
 {
-printf(YELLOW "\n============================================================\n" RESET);
+printf(YELLOW "\n**********************************************************\n" RESET);
 printf(YELLOW "                 DECODING PROCESS STARTED\n" RESET);
-printf(YELLOW "============================================================\n\n" RESET);
+printf(YELLOW "\n************************************************************\n" RESET);
     printf(YELLOW "Opening stego image... " RESET);
     if (open_decode_files(decInfo) == e_failure)   
     {

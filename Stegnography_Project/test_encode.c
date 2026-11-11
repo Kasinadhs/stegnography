@@ -1,89 +1,89 @@
-#include <stdio.h>              // This header file is used for input and output functions
-#include "encode.h"             // This header contains encoding related declarations
-#include "types.h"              // This header contains user defined types
-#include <string.h>             // This header is used for string comparison functions
-#include "decode.h"             // This header contains decoding related declarations
-#define RED     "\033[1;91m"    // Bright Red
-#define GREEN   "\033[1;92m"    // Bright Green
-#define YELLOW  "\033[1;93m"    // Bright Yellow
-#define RESET   "\033[0m"       // Reset colour
+#include <stdio.h>              
+#include "encode.h"             
+#include "types.h"              
+#include <string.h>             
+#include "decode.h"             
+#define RED     "\033[1;91m"    
+#define GREEN   "\033[1;92m"    
+#define YELLOW  "\033[1;93m"    
+#define RESET   "\033[0m"       
 
-int main(int argc, char *argv[])   // This is the main function where execution starts
+int main(int argc, char *argv[])   
 {
-    if(argc<3)   // Check if minimum required arguments are provided
+    if(argc<3)   
     {
-        printf(RED "invalid arguments "RESET"\nfor encode -> ./a.out -e beautiful.bmp secret.txt\n");   // Print encode usage
-        printf("for decoding -> ./a.out -d stego.bmp\n");   // Print decode usage
-        return e_failure;   // Return failure if arguments are insufficient
+        printf(RED "invalid arguments "RESET"\nfor encode -> ./a.out -e beautiful.bmp secret.txt\n");   
+        printf("for decoding -> ./a.out -d stego.bmp\n");   
+        return e_failure;   
     }
 
-    if(check_operation_type(argv)==e_encode)   // Check if user selected encoding option
+    if(check_operation_type(argv)==e_encode)   
     {
-        printf(YELLOW "you chosed encoding\n"RESET);   // Print encoding message
+        printf(YELLOW "you chosed encoding\n"RESET);   
 
-        EncodeInfo encInfo;   // Create structure variable for encoding
+        EncodeInfo encInfo;   
 
-        if(read_and_validate_encode_args(argv, &encInfo)==e_success)   // Validate encode arguments
+        if(read_and_validate_encode_args(argv, &encInfo)==e_success)   
         {
-            printf(GREEN "Read and validate successfull\n" RESET);   // Print success message
+            printf(GREEN "Read and validate successfull\n" RESET);   
 
-            if(do_encoding(&encInfo)==e_success)   // Perform encoding process
+            if(do_encoding(&encInfo)==e_success)   
             {
-                printf(GREEN "Encoding successfull\n" RESET );   // Print encoding success
-                return e_success;   // Return success
+                printf(GREEN "Encoding successfull\n" RESET );   
+                return e_success;   
             }
         }
         else
         {
-            printf(GREEN "Read and validate unsuccessfull\n" RESET);   // Print validation failure
+            printf(GREEN "Read and validate unsuccessfull\n" RESET);   
         }
-        return e_success;   // Return success even if encoding fails internally
+        return e_success;   
     }
-    else if(check_operation_type(argv)==e_decode)   // Check if user selected decoding option
+    else if(check_operation_type(argv)==e_decode)   
     {
-        printf(YELLOW "you chosing decoding\n"RESET);   // Print decoding message
+        printf(YELLOW "you chosing decoding\n"RESET);   
 
-        DecodeInfo decInfo;   // Create structure variable for decoding
+        DecodeInfo decInfo;   
 
-        if(read_and_validate_decode_args(argv, &decInfo) == e_success)   // Validate decode arguments
+        if(read_and_validate_decode_args(argv, &decInfo) == e_success)   
         {
-            if(do_decoding(&decInfo) == e_success)   // Perform decoding process
+            if(do_decoding(&decInfo) == e_success)   
             {
-                printf(GREEN "Decoding successful\n" RESET);   // Print decoding success
+                printf(GREEN "Decoding successful\n" RESET);  
             }
             else
             {
-                printf(RED "Decoding failed\n" RESET);   // Print decoding failure
+                printf(RED "Decoding failed\n" RESET);  
             }
         }
         else
         {
-            printf(RED "Invalid decode arguments\n" RESET);   // Print invalid argument message
+            printf(RED "Invalid decode arguments\n" RESET);   
         }
 
-        return e_success;   // Return success after decoding flow
+        return e_success;   
     }
-    else   // If neither encoding nor decoding option is selected
+    else   
     {
         printf(RED "invalid arguments\n" RESET);
-        printf("for encode -> ./a.out -e beautiful.bmp secret.txt\n");   // Print encode usage
-        printf("for decoding -> ./a.out -d stego.bmp\n");   // Print decode usage
-        return e_failure;   // Return failure
+        printf("for encode -> ./a.out -e beautiful.bmp secret.txt\n");   
+        printf("for decoding -> ./a.out -d stego.bmp\n");   
+        return e_failure;   
     }
 }
 
-OperationType check_operation_type(char *argv[])   // This function checks whether user selected encode or decode
+OperationType check_operation_type(char *argv[])   
 {
-    if(strcmp(argv[1], "-e")==0)   // Compare argument with "-e"
+    if(strcmp(argv[1], "-e")==0)   
     {
-        return e_encode;   // Return encode operation type
+        return e_encode;   
     }
-    else if(strcmp(argv[1], "-d")==0)   // Compare argument with "-d"
+    else if(strcmp(argv[1], "-d")==0)  
     {
-        return e_decode;   // Return decode operation type
+        return e_decode;   
     }
     else
     {
-        return e_unsupported;   // Return unsupported operation if input is invalid
+        return e_unsupported;   
     }
 }
